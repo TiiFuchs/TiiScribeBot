@@ -3,12 +3,15 @@
 namespace App\Telepath;
 
 use App\Jobs\ConvertFiletype;
+use App\Telepath\Middleware\OnlyAuthorizedUsers;
 use Illuminate\Support\Str;
 use Telepath\Bot;
 use Telepath\Handlers\Message\MessageType;
+use Telepath\Middleware\Attributes\Middleware;
 use Telepath\Telegram\Update;
 use Telepath\Telegram\Voice;
 
+#[Middleware(OnlyAuthorizedUsers::class)]
 class VoiceMessage
 {
 
