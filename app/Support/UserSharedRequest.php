@@ -5,6 +5,8 @@ namespace App\Support;
 enum UserSharedRequest: int
 {
 
-    case ALLOW_USER = 1;
+    case GRANT_ACCESS = 1;
+
+    case REVOKE_ACCESS = 2;
 
 }

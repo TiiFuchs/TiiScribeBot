@@ -12,14 +12,25 @@ class LoginTelegramUser
 
     public function handle(Request $request, Closure $next)
     {
-        $user = new \Telepath\Telegram\User($request->json('message.from'));
+        $from = collect($request->json('message.from'));
 
-        if ($user) {
+        if ($from) {
 
             Auth::login(
-                User::updateOrCreate([
-                    'id' => $user->id,
-                ], $user->toArray())
+                User::updateOrCreate(
+                    [
+                        'id' => $from['id'],
+                    ],
+                    $from->only([
+                        'is_bot',
+                        'first_name',
+                        'last_name',
+                        'username',
+                        'language_code',
+                        'is_premium',
+                        'added_to_attachment_menu',
+                    ])->all()
+                )
             );
 
         }

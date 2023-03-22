@@ -23,12 +23,20 @@ class Access
     ) {}
 
     #[Command('access')]
-    public function giveAccess(Update $update)
+    public function access(Update $update)
     {
-        $selectUserButton = KeyboardButton::make(
+        $grantAccessButton = KeyboardButton::make(
             text: 'Zugriff gewähren...',
             request_user: KeyboardButtonRequestUser::make(
-                request_id: UserSharedRequest::ALLOW_USER->value,
+                request_id: UserSharedRequest::GRANT_ACCESS->value,
+                user_is_bot: false,
+            )
+        );
+
+        $revokeAccessButton = KeyboardButton::make(
+            text: 'Zugriff entziehen...',
+            request_user: KeyboardButtonRequestUser::make(
+                request_id: UserSharedRequest::REVOKE_ACCESS->value,
                 user_is_bot: false,
             )
         );
@@ -38,7 +46,8 @@ class Access
             text: 'Welchem Benutzer willst du Zugriff geben?',
             reply_markup: ReplyKeyboardMarkup::make(
                 keyboard: [
-                    [$selectUserButton],
+                    [$grantAccessButton],
+                    [$revokeAccessButton],
                 ],
                 resize_keyboard: true,
                 one_time_keyboard: true,
@@ -46,12 +55,12 @@ class Access
         );
     }
 
-    #[UserSharedMessage(UserSharedRequest::ALLOW_USER)]
-    public function userSelected(Update $update)
+    #[UserSharedMessage(UserSharedRequest::GRANT_ACCESS)]
+    public function grantAccess(Update $update)
     {
         $user = $update->message->user_shared;
 
-        User::firstOrCreate([
+        User::updateOrCreate([
             'id' => $user->user_id,
         ], [
             'is_bot'     => false,
@@ -63,6 +72,23 @@ class Access
             chat_id: $update->message->from->id,
             text: '🤖 Ich biete dem ausgewählten Nutzer ab sofort meine Dienste an.',
         );
+    }
+
+    #[UserSharedMessage(UserSharedRequest::REVOKE_ACCESS)]
+    public function revokeAccess(Update $update)
+    {
+        $userId = $update->message->user_shared->user_id;
+
+        User::whereId($userId)->update([
+            'can_access' => false,
+            'can_invite' => false,
+        ]);
+
+        $this->bot->sendMessage(
+            chat_id: $update->message->from->id,
+            text: '🤖 Ich werde nicht mehr auf den ausgewählten Nutzer reagieren.'
+        );
+
     }
 
 }
