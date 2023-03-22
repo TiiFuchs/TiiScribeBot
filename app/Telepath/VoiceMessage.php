@@ -11,7 +11,6 @@ use Telepath\Bot;
 use Telepath\Handlers\Message\MessageType;
 use Telepath\Middleware\Attributes\Middleware;
 use Telepath\Telegram\Update;
-use Telepath\Telegram\Voice;
 
 #[Middleware(OnlyAuthorizedUsers::class)]
 class VoiceMessage
@@ -22,6 +21,7 @@ class VoiceMessage
     ) {}
 
     #[MessageType(MessageType::VOICE)]
+    #[MessageType(MessageType::AUDIO)]
     public function __invoke(Update $update)
     {
         $this->bot->sendMessage(
@@ -29,7 +29,10 @@ class VoiceMessage
             '💬 Ich verarbeite deine Sprachnachricht...',
         );
 
-        $filepath = $this->saveFile($update->message->voice);
+        $fileId = $update->message->voice?->file_id
+            ?? $update->message->audio?->file_id;
+
+        $filepath = $this->saveFile($fileId);
 
         EnhanceAudioJob::dispatch(
             new AudioPipeline(
@@ -39,14 +42,15 @@ class VoiceMessage
         );
     }
 
-    protected function saveFile(Voice $voice): string
+    protected function saveFile(string $fileId): string
     {
-        $file = $this->bot->getFile($voice->file_id);
+        $file = $this->bot->getFile($fileId);
 
         $token = config('telepath.bots.main.api_token');
         $uri = "https://api.telegram.org/file/bot{$token}/{$file->file_path}";
+        $ext = pathinfo($file->file_path, PATHINFO_EXTENSION);
 
-        $filename = 'voice/' . date('YmdHis') . '_' . Str::random() . '.oga';
+        $filename = 'voice/' . date('YmdHis') . '_' . Str::random() . ".$ext";
 
         (new Client())->get($uri, [
             'sink' => storage_path("app/$filename"),

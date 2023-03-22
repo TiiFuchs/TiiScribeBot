@@ -59,9 +59,15 @@ class AudioFile
         return fopen($this->fullPath(), 'wb');
     }
 
-    public function delete()
+    public function delete(): bool
     {
-        unlink($this->fullPath());
+        $path = $this->fullPath();
+
+        if (file_exists($path)) {
+            return unlink($this->fullPath());
+        }
+
+        return true;
     }
 
 }

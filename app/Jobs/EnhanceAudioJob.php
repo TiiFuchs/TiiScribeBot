@@ -174,10 +174,43 @@ class EnhanceAudioJob implements ShouldQueue
     protected function sendEnhancedVoiceMessage()
     {
         $chatId = $this->pipeline->statusMessage()['chat_id'];
-        Telepath::bot()->sendVoice(
-            chat_id: $chatId,
-            voice: InputFile::fromResource($this->pipeline->output->read())
+
+        if (pathinfo($this->pipeline->output->path, PATHINFO_EXTENSION) === 'oga') {
+
+            Telepath::bot()->sendVoice(
+                chat_id: $chatId,
+                voice: InputFile::fromResource($this->pipeline->output->read())
+            );
+
+            return;
+
+        }
+
+        // Try to convert it to oga
+        $ogaFile = new AudioFile(
+            'voice/' . $this->pipeline->output->derivedName('voiced', 'oga')
         );
+
+        $this->pipeline->pushFile($ogaFile);
+
+        $result = \Process::run("ffmpeg -i \"{$this->pipeline->output->fullPath()}\" -c:a libopus \"{$ogaFile->fullPath()}\"");
+
+        if ($result->successful()) {
+
+            Telepath::bot()->sendVoice(
+                chat_id: $chatId,
+                voice: InputFile::fromResource($ogaFile->read())
+            );
+
+        } else {
+
+            Telepath::bot()->sendAudio(
+                chat_id: $chatId,
+                audio: InputFile::fromResource($this->pipeline->output->read())
+            );
+
+        }
+
     }
 
 }

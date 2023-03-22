@@ -9,7 +9,7 @@ class AudioPipeline
 
     public AudioFile $input;
 
-    public ?AudioFile $output;
+    public ?AudioFile $output = null;
 
     protected array $statusMessage;
 
@@ -56,11 +56,22 @@ class AudioPipeline
         );
     }
 
-    public function cleanupFiles()
+    public function cleanupFiles(): bool
     {
+        $success = true;
+
         foreach ($this->files() as $file) {
-            $file->delete();
+            $success = $success && $file->delete();
         }
+
+        return $success;
+    }
+
+    public function pushFile(AudioFile $audioFile): static
+    {
+        $this->fileHistory[] = $audioFile;
+
+        return $this;
     }
 
     public function files(): array
