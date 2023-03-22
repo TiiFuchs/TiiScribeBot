@@ -15,7 +15,7 @@ class OnlyAuthorizedUsers extends Middleware
             ->explode(',')
             ->map(fn($item) => trim($item))
             ->filter()
-            ->values();
+            ->all();
     }
 
     public function handle(Update $update, callable $next, array $config = [])
