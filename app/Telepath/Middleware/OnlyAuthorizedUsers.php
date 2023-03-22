@@ -8,9 +8,15 @@ use Telepath\Telegram\Update;
 class OnlyAuthorizedUsers extends Middleware
 {
 
-    protected array $authorizedUsers = [
-        397304,
-    ];
+    protected array $authorizedUsers;
+
+    public function __construct() {
+        $this->authorizedUsers = str(config('tiiscribe.authorized_users'))
+            ->explode(',')
+            ->map(fn($item) => trim($item))
+            ->filter()
+            ->values();
+    }
 
     public function handle(Update $update, callable $next, array $config = [])
     {
