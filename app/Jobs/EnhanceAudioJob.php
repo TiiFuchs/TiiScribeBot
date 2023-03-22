@@ -72,7 +72,7 @@ class EnhanceAudioJob implements ShouldQueue
         // Send back enhanced voice message
         $this->sendEnhancedVoiceMessage();
 
-        ConvertFiletype::dispatch(
+        TranscribeVoiceMessage::dispatch(
             $this->pipeline->nextStep(),
             $this->chatId,
         );
@@ -187,9 +187,7 @@ class EnhanceAudioJob implements ShouldQueue
         }
 
         // Try to convert it to oga
-        $ogaFile = new AudioFile(
-            'voice/' . $this->pipeline->output->derivedName('voiced', 'oga')
-        );
+        $ogaFile = $this->pipeline->output->derive('voiced', 'oga');
 
         $this->pipeline->pushFile($ogaFile);
 

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\AudioFile;
 use App\Models\AudioPipeline;
 use App\Support\HasStatusMessage;
 use Illuminate\Bus\Queueable;
@@ -33,22 +34,47 @@ class TranscribeVoiceMessage implements ShouldQueue
             )
         );
 
+        $mp3File = $this->convertToMp3($this->pipeline->input);
+
+        if (! $mp3File) {
+            $this->setStatus('🖊️ ⚡ Transkription fehlgeschlagen.');
+            return;
+        }
+
         // OpenAI
         $response = $openai->audio()->transcribe([
-            'file'     => $this->pipeline->input->read(),
+            'file'     => $mp3File->read(),
             'model'    => 'whisper-1',
-//            'language' => 'de',
         ]);
 
         $this->setStatus('🖊️ ✅ Transkription abgeschlossen. Folgender Text wurde erkannt:');
 
         Telepath::bot()->sendMessage(
             chat_id: $this->chatId,
-            text: $response->text,
+            text: '<i>' . $response->text . '</i>',
             parse_mode: 'HTML',
         );
 
         $this->pipeline->cleanupFiles();
+
+    }
+
+    protected function convertToMp3(AudioFile $input): ?AudioFile
+    {
+        if (pathinfo($input->path, PATHINFO_EXTENSION) === 'mp3') {
+            return $input;
+        }
+
+        $output = $input->derive('converted', 'mp3');
+        $this->pipeline->pushFile($output);
+
+        $result = \Process::run("ffmpeg -i \"{$input->fullPath()}\" -vn -acodec libmp3lame -q:a 4 \"{$output->fullPath()}\"");
+
+        if (! $result->successful()) {
+            return null;
+        }
+
+        return $output;
 
     }
 

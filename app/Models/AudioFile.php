@@ -24,6 +24,13 @@ class AudioFile
         return basename($this->path);
     }
 
+    public function derive(string $suffix, string $extension = null): AudioFile
+    {
+        return new static(
+            dirname($this->path) . DIRECTORY_SEPARATOR . $this->derivedName($suffix, $extension)
+        );
+    }
+
     public function derivedName(string $suffix, string $extension = null): string
     {
         $info = new \SplFileInfo($this->path);
