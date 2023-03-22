@@ -173,7 +173,7 @@ class EnhanceAudioJob implements ShouldQueue
 
     protected function sendEnhancedVoiceMessage()
     {
-        $chatId = $this->pipeline->statusMessage()['chat_id'];
+        $chatId = $this->chatId;
 
         if (pathinfo($this->pipeline->output->path, PATHINFO_EXTENSION) === 'oga') {
 
@@ -187,7 +187,7 @@ class EnhanceAudioJob implements ShouldQueue
         }
 
         // Try to convert it to oga
-        $ogaFile = $this->pipeline->output->derive('voiced', 'oga');
+        $ogaFile = $this->pipeline->output->derive('converted', 'oga');
 
         $this->pipeline->pushFile($ogaFile);
 
