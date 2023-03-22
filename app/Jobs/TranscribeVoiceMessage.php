@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Models\AudioPipeline;
+use App\Support\HasStatusMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,24 +17,38 @@ class TranscribeVoiceMessage implements ShouldQueue
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    use HasStatusMessage;
+
     public function __construct(
+        protected AudioPipeline $pipeline,
         protected int $chatId,
-        protected string $filename,
     ) {}
 
     public function handle(Client $openai)
     {
+        $this->pipeline->setStatusMessage(
+            Telepath::bot()->sendMessage(
+                chat_id: $this->chatId,
+                text: '🖊️ Sprachnachricht wird transkribiert...'
+            )
+        );
+
         // OpenAI
         $response = $openai->audio()->transcribe([
-            'file'     => fopen(storage_path("app/voice/$this->filename"), 'rb'),
+            'file'     => $this->pipeline->input->read(),
             'model'    => 'whisper-1',
-            'language' => 'de',
+//            'language' => 'de',
         ]);
 
+        $this->setStatus('🖊️ ✅ Transkription abgeschlossen. Folgender Text wurde erkannt:');
+
         Telepath::bot()->sendMessage(
-            $this->chatId,
-            $response->text,
+            chat_id: $this->chatId,
+            text: $response->text,
+            parse_mode: 'HTML',
         );
+
+        $this->pipeline->cleanupFiles();
 
     }
 

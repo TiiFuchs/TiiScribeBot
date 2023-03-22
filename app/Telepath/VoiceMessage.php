@@ -2,8 +2,10 @@
 
 namespace App\Telepath;
 
-use App\Jobs\ConvertFiletype;
+use App\Jobs\EnhanceAudioJob;
+use App\Models\AudioPipeline;
 use App\Telepath\Middleware\OnlyAuthorizedUsers;
+use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Telepath\Bot;
 use Telepath\Handlers\Message\MessageType;
@@ -24,14 +26,16 @@ class VoiceMessage
     {
         $this->bot->sendMessage(
             $update->message->from->id,
-            '🔊 Ich verarbeite deine Sprachnachricht...',
+            '💬 Ich verarbeite deine Sprachnachricht...',
         );
 
-        $filename = $this->saveFile($update->message->voice);
+        $filepath = $this->saveFile($update->message->voice);
 
-        ConvertFiletype::dispatch(
-            $update->message->from->id,
-            $filename,
+        EnhanceAudioJob::dispatch(
+            new AudioPipeline(
+                $filepath
+            ),
+            $update->message->chat->id,
         );
     }
 
@@ -42,19 +46,11 @@ class VoiceMessage
         $token = config('telepath.bots.main.api_token');
         $uri = "https://api.telegram.org/file/bot{$token}/{$file->file_path}";
 
-        $filename = date('YmdHis') . '_' . Str::random() . '.oga';
-        $target = fopen(storage_path("app/voice/$filename"), 'wb');
+        $filename = 'voice/' . date('YmdHis') . '_' . Str::random() . '.oga';
 
-        $curl = curl_init($uri);
-        curl_setopt_array($curl, [
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HEADER         => false,
-            CURLOPT_FILE           => $target,
+        (new Client())->get($uri, [
+            'sink' => storage_path("app/$filename"),
         ]);
-        curl_exec($curl);
-        curl_close($curl);
-
-        fclose($target);
 
         return $filename;
     }

@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Models\AudioPipeline;
+use App\Support\HasStatusMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,26 +16,39 @@ class ConvertFiletype implements ShouldQueue
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    use HasStatusMessage;
+
     public function __construct(
+        protected AudioPipeline $pipeline,
         protected int $chatId,
-        protected string $filename,
     ) {}
 
     public function handle(): void
     {
-        $input = storage_path("app/voice/$this->filename");
-        $filename = basename($this->filename, '.oga') . '.mp3';
-        $output = storage_path("app/voice/$filename");
+        $this->pipeline->setStatusMessage(
+            \Telepath::bot()->sendMessage(
+                chat_id: $this->chatId,
+                text: '🔄 Sprachnachricht wird konvertiert...'
+            )
+        );
+
+        $this->pipeline->makeOutput('converted', 'mp3');
+
+        $input = $this->pipeline->input->fullPath();
+        $output = $this->pipeline->output->fullPath();
 
         $result = Process::run("ffmpeg -i \"{$input}\" -vn -acodec libmp3lame -q:a 4 \"{$output}\"");
 
         if (! $result->successful()) {
+            $this->setStatus('🔄 ⚡ Konvertierung der Sprachnachricht fehlgeschlagen.');
             throw new \Exception($result->errorOutput());
         }
 
+        $this->setStatus('🔄 ✅ Konvertierung abgeschlossen.');
+
         TranscribeVoiceMessage::dispatch(
+            $this->pipeline->nextStep(),
             $this->chatId,
-            $filename,
         );
     }
 
