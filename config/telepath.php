@@ -1,5 +1,7 @@
 <?php
 
+use App\Telepath\Middleware\LoginTelegramUser;
+
 return [
 
     /*
@@ -26,7 +28,7 @@ return [
     |
     */
 
-    'bots'    => [
+    'bots' => [
 
         'main' => [
             'api_token' => env('TELEGRAM_API_TOKEN', ''),
@@ -77,6 +79,7 @@ return [
             Telepath\Laravel\Http\Middleware\ResolveWebhook::class,
             Telepath\Laravel\Http\Middleware\ValidateRequestSource::class,
             Telepath\Laravel\Http\Middleware\ValidateSecretToken::class,
+            \App\Http\Middleware\LoginTelegramUser::class,
         ],
 
         /*
@@ -90,7 +93,7 @@ return [
         |
         */
 
-        'resolver'   => \Telepath\Laravel\WebhookResolver\HashWebhookResolver::class,
+        'resolver' => \Telepath\Laravel\WebhookResolver\HashWebhookResolver::class,
 
     ],
 

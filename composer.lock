@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "477419bc97c423ded360fedfdc4b8e91",
+    "content-hash": "ae52a9b3208db141697bebfd5e863637",
     "packages": [
         {
             "name": "brick/math",
@@ -5853,16 +5853,16 @@
         },
         {
             "name": "telepath/telepath",
-            "version": "v0.11.0",
+            "version": "v0.12.0-beta2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/telepath-php/telepath.git",
-                "reference": "2b800f5f16d71587c9beeb4c1f94b9e128494ea2"
+                "reference": "76085c24729a7c3c383e71c2bc6b9f135392073b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/telepath-php/telepath/zipball/2b800f5f16d71587c9beeb4c1f94b9e128494ea2",
-                "reference": "2b800f5f16d71587c9beeb4c1f94b9e128494ea2",
+                "url": "https://api.github.com/repos/telepath-php/telepath/zipball/76085c24729a7c3c383e71c2bc6b9f135392073b",
+                "reference": "76085c24729a7c3c383e71c2bc6b9f135392073b",
                 "shasum": ""
             },
             "require": {
@@ -5908,9 +5908,9 @@
             "description": "PHP Library for creating Telegram Bots",
             "support": {
                 "issues": "https://github.com/telepath-php/telepath/issues",
-                "source": "https://github.com/telepath-php/telepath/tree/v0.11.0"
+                "source": "https://github.com/telepath-php/telepath/tree/v0.12.0-beta2"
             },
-            "time": "2023-03-11T19:32:19+00:00"
+            "time": "2023-03-22T20:14:59+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -9206,7 +9206,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "telepath/telepath": 10
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

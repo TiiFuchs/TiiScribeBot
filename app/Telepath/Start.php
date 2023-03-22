@@ -2,13 +2,13 @@
 
 namespace App\Telepath;
 
-use App\Telepath\Middleware\OnlyAuthorizedUsers;
+use App\Telepath\Middleware\CanAccess;
 use Telepath\Bot;
 use Telepath\Handlers\Message\Command;
 use Telepath\Middleware\Attributes\Middleware;
 use Telepath\Telegram\Update;
 
-#[Middleware(OnlyAuthorizedUsers::class)]
+#[Middleware(CanAccess::class)]
 class Start
 {
 
