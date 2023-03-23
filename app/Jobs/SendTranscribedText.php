@@ -36,11 +36,13 @@ class SendTranscribedText implements ShouldQueue
             Telepath::bot()->sendMessage(
                 chat_id: $this->chatId,
                 text: $text,
-                reply_markup: InlineKeyboardMarkup::make(
-                    [
-                        [$summarizeButton],
-                    ]
-                )
+                reply_markup: count($parts) === 1
+                    ? InlineKeyboardMarkup::make(
+                        [
+                            [$summarizeButton],
+                        ]
+                    )
+                    : null
             );
         }
 
