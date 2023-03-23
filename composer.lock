@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b55ea251dcc97a6853f7b3e916641400",
+    "content-hash": "d5e2a14930b89fe5a6b562f3cc905754",
     "packages": [
         {
             "name": "brick/math",
@@ -5931,16 +5931,16 @@
         },
         {
             "name": "telepath/telepath",
-            "version": "v0.12.0",
+            "version": "v0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/telepath-php/telepath.git",
-                "reference": "a9224672165b115cab04cdf218368cf255562175"
+                "reference": "c22a792f8e7f57c5862fa3bde1670332ebb0deff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/telepath-php/telepath/zipball/a9224672165b115cab04cdf218368cf255562175",
-                "reference": "a9224672165b115cab04cdf218368cf255562175",
+                "url": "https://api.github.com/repos/telepath-php/telepath/zipball/c22a792f8e7f57c5862fa3bde1670332ebb0deff",
+                "reference": "c22a792f8e7f57c5862fa3bde1670332ebb0deff",
                 "shasum": ""
             },
             "require": {
@@ -5965,7 +5965,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "v0.11.x-dev"
+                    "dev-main": "v0.13.x-dev"
                 }
             },
             "autoload": {
@@ -5986,9 +5986,9 @@
             "description": "PHP Library for creating Telegram Bots",
             "support": {
                 "issues": "https://github.com/telepath-php/telepath/issues",
-                "source": "https://github.com/telepath-php/telepath/tree/v0.12.0"
+                "source": "https://github.com/telepath-php/telepath/tree/v0.12.1"
             },
-            "time": "2023-03-23T20:34:52+00:00"
+            "time": "2023-03-23T21:29:46+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -9285,9 +9285,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "telepath/telepath": 10
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
