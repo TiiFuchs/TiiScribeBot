@@ -28,7 +28,7 @@ class Summarize
         $this->bot->sendMessage(
             chat_id: $update->callback_query->message->chat->id,
             reply_to_message_id: $update->callback_query->message->message_id,
-            text: "<b>Zusammenfassung:</b>\n\n" . $summary,
+            text: "<b>Zusammenfassung:</b>\n" . $summary,
             parse_mode: 'HTML',
         );
 
