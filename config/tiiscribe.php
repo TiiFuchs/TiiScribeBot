@@ -2,6 +2,6 @@
 
 return [
 
-    'authorized_users' => env("AUTHORIZED_USERS", ''),
+    'ffmpeg' => env('FFMPEG_BIN', 'ffmpeg')
 
 ];

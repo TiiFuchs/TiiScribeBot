@@ -10,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Telepath\Laravel\Facades\Telepath;
+use Telepath\Telegram\InlineKeyboardButton;
+use Telepath\Telegram\InlineKeyboardMarkup;
 
 class SendTranscribedText implements ShouldQueue
 {
@@ -24,19 +26,22 @@ class SendTranscribedText implements ShouldQueue
 
     public function handle(): void
     {
-        $parts = $this->splitMessages(
-            <<<EOT
-            Folgender Text wurde erkannt:
+        $parts = $this->splitMessages($this->text);
 
-            »{$this->text}«
-            EOT
+        $summarizeButton = InlineKeyboardButton::make(
+            text: 'Zusammenfassung',
+            callback_data: 'summarize'
         );
 
         foreach ($parts as $text) {
             Telepath::bot()->sendMessage(
                 chat_id: $this->chatId,
                 text: $text,
-                parse_mode: 'HTML',
+                reply_markup: InlineKeyboardMarkup::make(
+                    [
+                        [$summarizeButton],
+                    ]
+                )
             );
         }
 

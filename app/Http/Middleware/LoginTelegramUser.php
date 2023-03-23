@@ -12,7 +12,7 @@ class LoginTelegramUser
 
     public function handle(Request $request, Closure $next)
     {
-        $from = collect($request->json('message.from'));
+        $from = $this->findSender($request);
 
         if ($from) {
 
@@ -21,7 +21,7 @@ class LoginTelegramUser
                     [
                         'id' => $from['id'],
                     ],
-                    $from->only([
+                    collect($from)->only([
                         'is_bot',
                         'first_name',
                         'last_name',
@@ -36,6 +36,19 @@ class LoginTelegramUser
         }
 
         return $next($request);
+    }
+
+    protected function findSender(Request $request): ?array
+    {
+        foreach ($request->json() as $type => $data) {
+
+            if (is_array($data) && isset($data['from'])) {
+                return $data['from'];
+            }
+
+        }
+
+        return null;
     }
 
 }
