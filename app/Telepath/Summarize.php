@@ -21,14 +21,10 @@ class Summarize
     #[CallbackQueryData(exact: 'summarize')]
     public function summarize(Update $update)
     {
-        $this->bot->answerCallbackQuery(
-            callback_query_id: $update->callback_query->id,
-            text: '🤔 Text wird zusammengefasst...',
-        );
-
         $text = $update->callback_query->message->text;
         $summary = $this->generateSummary($text);
 
+        // Send summary
         $this->bot->sendMessage(
             chat_id: $update->callback_query->message->chat->id,
             reply_to_message_id: $update->callback_query->message->message_id,
@@ -36,14 +32,20 @@ class Summarize
             parse_mode: 'HTML',
         );
 
-        $result = $this->bot->editMessageReplyMarkup(
+        // Remove button
+        $this->bot->editMessageReplyMarkup(
             chat_id: $update->callback_query->message->chat->id,
             message_id: $update->callback_query->message->message_id,
             reply_markup: InlineKeyboardMarkup::make(
                 [[]]
             )
         );
-        ray($result);
+
+        // Answer CallbackQuery
+        $this->bot->answerCallbackQuery(
+            callback_query_id: $update->callback_query->id,
+        );
+
     }
 
     protected function generateSummary(string $text): string
