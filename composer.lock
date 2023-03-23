@@ -5931,16 +5931,16 @@
         },
         {
             "name": "telepath/telepath",
-            "version": "v0.12.0-beta2",
+            "version": "v0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/telepath-php/telepath.git",
-                "reference": "76085c24729a7c3c383e71c2bc6b9f135392073b"
+                "reference": "a9224672165b115cab04cdf218368cf255562175"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/telepath-php/telepath/zipball/76085c24729a7c3c383e71c2bc6b9f135392073b",
-                "reference": "76085c24729a7c3c383e71c2bc6b9f135392073b",
+                "url": "https://api.github.com/repos/telepath-php/telepath/zipball/a9224672165b115cab04cdf218368cf255562175",
+                "reference": "a9224672165b115cab04cdf218368cf255562175",
                 "shasum": ""
             },
             "require": {
@@ -5986,9 +5986,9 @@
             "description": "PHP Library for creating Telegram Bots",
             "support": {
                 "issues": "https://github.com/telepath-php/telepath/issues",
-                "source": "https://github.com/telepath-php/telepath/tree/v0.12.0-beta2"
+                "source": "https://github.com/telepath-php/telepath/tree/v0.12.0"
             },
-            "time": "2023-03-22T20:14:59+00:00"
+            "time": "2023-03-23T20:34:52+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
