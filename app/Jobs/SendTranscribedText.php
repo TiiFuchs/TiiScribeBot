@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 use Telepath\Laravel\Facades\Telepath;
 use Telepath\Telegram\InlineKeyboardButton;
 use Telepath\Telegram\InlineKeyboardMarkup;
@@ -54,13 +53,19 @@ class SendTranscribedText implements ShouldQueue
      */
     protected function splitMessages(string $text): array
     {
-        $parts = [];
-        while (strlen($text) > 0) {
-            $truncated = Str::limit($text, 4096, '');
-            $parts[] = $truncated;
-            $text = substr($text, strlen($truncated));
-        }
-        return $parts;
+        $words = str_word_count($text, 1); // split text into words
+        $chunks = array_reduce($words, function ($carry, $word) {
+            $lastIndex = count($carry) - 1;
+            if ($lastIndex < 0 || strlen($carry[$lastIndex]) + strlen($word) + 1 > 4096) {
+                // create a new chunk if the last chunk is too long or there are no chunks
+                $carry[] = $word;
+            } else {
+                // add the word to the last chunk
+                $carry[$lastIndex] .= ' ' . $word;
+            }
+            return $carry;
+        }, []);
+        return array_map('trim', $chunks); // remove leading/trailing spaces from chunks
     }
 
 }
