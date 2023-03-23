@@ -43,19 +43,17 @@ class TranscribeVoiceMessage implements ShouldQueue
 
         // OpenAI
         $response = $openai->audio()->transcribe([
-            'file'     => $mp3File->read(),
-            'model'    => 'whisper-1',
+            'file'  => $mp3File->read(),
+            'model' => 'whisper-1',
         ]);
 
-        $this->setStatus('🖊️ ✅ Transkription abgeschlossen. Folgender Text wurde erkannt:');
+        $this->setStatus('🖊️ ✅ Transkription abgeschlossen.');
 
-        Telepath::bot()->sendMessage(
-            chat_id: $this->chatId,
-            text: '<i>' . $response->text . '</i>',
-            parse_mode: 'HTML',
+        SendTranscribedText::dispatch(
+            $this->pipeline,
+            $this->chatId,
+            $response->text,
         );
-
-        $this->pipeline->cleanupFiles();
 
     }
 
