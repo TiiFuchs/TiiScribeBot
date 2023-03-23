@@ -53,7 +53,7 @@ class SendTranscribedText implements ShouldQueue
      */
     protected function splitMessages(string $text): array
     {
-        $words = str_word_count($text, 1); // split text into words
+        $words = preg_split('/\s+/', $text);// split text into words
         $chunks = array_reduce($words, function ($carry, $word) {
             $lastIndex = count($carry) - 1;
             if ($lastIndex < 0 || strlen($carry[$lastIndex]) + strlen($word) + 1 > 4096) {
