@@ -24,6 +24,7 @@ class User extends Model implements
         'added_to_attachment_menu' => 'boolean',
         'can_access'               => 'boolean',
         'can_invite'               => 'boolean',
+        'can_access_horizon'       => 'boolean',
     ];
 
 }

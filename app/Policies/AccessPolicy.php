@@ -20,4 +20,9 @@ class AccessPolicy
         return $user->can_invite;
     }
 
+    public function canAccessHorizon(User $user): bool
+    {
+        return $user->can_access_horizon;
+    }
+
 }

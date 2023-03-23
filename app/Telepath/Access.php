@@ -5,7 +5,7 @@ namespace App\Telepath;
 use App\Models\User;
 use App\Support\UserSharedRequest;
 use App\Telepath\Handlers\UserSharedMessage;
-use App\Telepath\Middleware\CanInvite;
+use App\Telepath\Middleware\Can;
 use Telepath\Bot;
 use Telepath\Handlers\Message\Command;
 use Telepath\Middleware\Attributes\Middleware;
@@ -14,7 +14,7 @@ use Telepath\Telegram\KeyboardButtonRequestUser;
 use Telepath\Telegram\ReplyKeyboardMarkup;
 use Telepath\Telegram\Update;
 
-#[Middleware(CanInvite::class)]
+#[Middleware(Can::class, 'invite')]
 class Access
 {
 

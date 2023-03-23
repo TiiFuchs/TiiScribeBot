@@ -4,7 +4,7 @@ namespace App\Telepath;
 
 use App\Jobs\EnhanceAudioJob;
 use App\Models\AudioPipeline;
-use App\Telepath\Middleware\CanAccess;
+use App\Telepath\Middleware\Can;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Telepath\Bot;
@@ -12,7 +12,7 @@ use Telepath\Handlers\Message\MessageType;
 use Telepath\Middleware\Attributes\Middleware;
 use Telepath\Telegram\Update;
 
-#[Middleware(CanAccess::class)]
+#[Middleware(Can::class, 'access')]
 class VoiceMessage
 {
 
