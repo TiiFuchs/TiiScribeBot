@@ -2,11 +2,11 @@
 
 namespace App\Telepath;
 
+use App\Models\Transcript;
 use App\Telepath\Middleware\Can;
 use Illuminate\Support\Facades\Cache;
 use OpenAI\Client;
 use Telepath\Bot;
-use Telepath\Exceptions\TelegramException;
 use Telepath\Handlers\CallbackQuery\CallbackQueryData;
 use Telepath\Middleware\Attributes\Middleware;
 use Telepath\Telegram\InlineKeyboardMarkup;
@@ -20,35 +20,41 @@ class Summarize
         protected Bot $bot,
     ) {}
 
-    #[CallbackQueryData(exact: 'summarize')]
+    #[CallbackQueryData(prefix: 'summarize:')]
     public function summarize(Update $update)
     {
-        $message = $update->callback_query->message;
+        $transcriptId = explode(':', $update->callback_query->data)[1] ?? null;
+        $transcript = Transcript::find($transcriptId);
 
-        $cacheKey = "summarize:{$message->chat->id}:{$message->message_id}";
+        if (! $transcript) {
+            \Log::warning("Transcript with ID {$transcriptId} could not be found.");
+            return;
+        }
+
+        $cacheKey = "summarize:{$transcriptId}";
         if (Cache::has($cacheKey)) {
             return;
         }
         Cache::set($cacheKey, true, now()->addSeconds(30));
 
-        $summary = $this->generateSummary($message->text);
+        $summary = $this->generateSummary($transcript->text);
 
         // Send summary
         $this->bot->sendMessage(
-            chat_id: $message->chat->id,
+            chat_id: $transcript->user_id,
             text: "<b>Zusammenfassung:</b>\n" . $summary,
             parse_mode: 'HTML',
-            reply_to_message_id: $message->message_id,
+            reply_to_message_id: $transcript->message_id,
         );
 
         // Remove button
         $this->bot->editMessageReplyMarkup(
-            chat_id: $message->chat->id,
-            message_id: $message->message_id,
-            reply_markup: InlineKeyboardMarkup::make(
-                [[]]
-            )
+            chat_id: $transcript->user_id,
+            message_id: $transcript->message_id,
         );
+
+        // Remove transcript data
+        $transcript->delete();
 
         // Answer CallbackQuery
         $this->bot->answerCallbackQuery(

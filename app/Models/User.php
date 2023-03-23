@@ -27,4 +27,9 @@ class User extends Model implements
         'can_access_horizon'       => 'boolean',
     ];
 
+    public function transcripts()
+    {
+        return $this->hasMany(Transcript::class);
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\AudioPipeline;
+use App\Models\Transcript;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,28 +26,41 @@ class SendTranscribedText implements ShouldQueue
 
     public function handle(): void
     {
+        $transcript = Transcript::create([
+            'user_id' => $this->chatId,
+            'text'    => $this->text,
+        ]);
+
         $parts = $this->splitMessages($this->text);
 
         $summarizeButton = InlineKeyboardButton::make(
-            text: 'Zusammenfassung',
-            callback_data: 'summarize'
+            text: 'tl;dr',
+            callback_data: "summarize:{$transcript->id}",
         );
 
-        foreach ($parts as $text) {
-            Telepath::bot()->sendMessage(
+        foreach ($parts as $index => $text) {
+
+            $replyMarkup = ($index === count($parts) - 1)
+                ? InlineKeyboardMarkup::make([[$summarizeButton]])
+                : null;
+
+            $message = Telepath::bot()->sendMessage(
                 chat_id: $this->chatId,
                 text: $text,
-                reply_markup: count($parts) === 1
-                    ? InlineKeyboardMarkup::make(
-                        [
-                            [$summarizeButton],
-                        ]
-                    )
-                    : null
+                reply_markup: $replyMarkup
             );
+
         }
 
+        $transcript->update([
+            'message_id' => $message->message_id,
+        ]);
+
+        ClearTranscript::dispatch($transcript)
+            ->delay(now()->addMinutes(30));
+
         Cleanup::dispatch($this->pipeline);
+
     }
 
     /**
