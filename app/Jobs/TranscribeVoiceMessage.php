@@ -67,7 +67,7 @@ class TranscribeVoiceMessage implements ShouldQueue
         $this->pipeline->pushFile($output);
 
         $ffmpegPath = config("tiiscribe.ffmpeg");
-        $result = \Process::run("{$ffmpegPath} -i \"{$input->fullPath()}\" -vn -acodec libmp3lame -q:a 4 \"{$output->fullPath()}\"");
+        $result = \Process::run("{$ffmpegPath} -y -i \"{$input->fullPath()}\" -vn -acodec libmp3lame -q:a 4 \"{$output->fullPath()}\"");
 
         if (! $result->successful()) {
             \Log::error($result->errorOutput());

@@ -192,7 +192,7 @@ class EnhanceAudioJob implements ShouldQueue
         $this->pipeline->pushFile($ogaFile);
 
         $ffmpegPath = config('tiiscribe.ffmpeg', 'ffmpeg');
-        $result = \Process::run("{$ffmpegPath} -i \"{$this->pipeline->output->fullPath()}\" -c:a libopus \"{$ogaFile->fullPath()}\"");
+        $result = \Process::run("{$ffmpegPath} -y -i \"{$this->pipeline->output->fullPath()}\" -c:a libopus \"{$ogaFile->fullPath()}\"");
 
         if ($result->successful()) {
 
