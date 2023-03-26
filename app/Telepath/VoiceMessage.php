@@ -3,6 +3,7 @@
 namespace App\Telepath;
 
 use App\Jobs\EnhanceAudioJob;
+use App\Jobs\TranscribeVoiceMessage;
 use App\Models\AudioPipeline;
 use App\Telepath\Middleware\Can;
 use GuzzleHttp\Client;
@@ -33,13 +34,20 @@ class VoiceMessage
             ?? $update->message->audio?->file_id;
 
         $filepath = $this->saveFile($fileId);
-
-        EnhanceAudioJob::dispatch(
+        
+        TranscribeVoiceMessage::dispatch(
             new AudioPipeline(
                 $filepath
             ),
-            $update->message->chat->id,
+            $this->chatId,
         );
+
+//         EnhanceAudioJob::dispatch(
+//             new AudioPipeline(
+//                 $filepath
+//             ),
+//             $update->message->chat->id,
+//         );
     }
 
     protected function saveFile(string $fileId): string
