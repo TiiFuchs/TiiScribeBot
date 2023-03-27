@@ -39,7 +39,7 @@ class VoiceMessage
             new AudioPipeline(
                 $filepath
             ),
-            $this->chatId,
+            $update->message->chat->id,
         );
 
 //         EnhanceAudioJob::dispatch(
