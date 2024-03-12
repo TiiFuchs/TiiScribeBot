@@ -67,7 +67,7 @@ class Summarize
     {
         $openai = resolve(Client::class);
         $response = $openai->completions()->create([
-            'model'             => 'gpt-3.5-turbo-0125',
+            'model'             => 'gpt-3.5-turbo-instruct',
             'prompt'            => $text . "\n\ntl;dr:",
             'max_tokens'        => 200,
             'temperature'       => 0.7,
